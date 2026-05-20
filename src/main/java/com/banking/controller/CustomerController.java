@@ -8,10 +8,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.banking.entity.Customer;
 import com.banking.service.CustomerService;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 @Controller
@@ -49,6 +51,47 @@ public class CustomerController {
         model.addAttribute("customer", new Customer());
 
         return "register";
+    }
+    
+    //LOAD LOGIN PAGE
+    
+    @GetMapping("/login")
+    public String loadLoginPage()
+    {
+    	return "login";
+    }
+    
+    //CUSTOMER LOGIN
+    
+    @PostMapping("/customerLogin")
+    public String customerLogin(@RequestParam String email,
+    							@RequestParam String password,
+    							Model model,
+    							HttpSession session)
+    {
+    	Customer customer = customerService.loginCustomer(email, password);
+    	
+    	if(customer != null)
+    	{
+    		session.setAttribute("loggedInCustomer", customer);
+    		model.addAttribute("customer",customer);
+    		
+    		return "dashboard";
+    	}
+    	
+    	model.addAttribute("errorMessage","Invalid Email or Password");
+    	
+    	return "Login";
+    }
+    
+    //LOGOUT
+    
+    @GetMapping("/logout")
+    public String logout(HttpSession session)
+    {
+    	session.invalidate();
+    	
+    	return "redirect/login";
     }
 
 }

@@ -34,5 +34,18 @@ public class CustomerServiceImpl implements CustomerService {
 
         return customerRepository.save(customer);
     }
+    
+    @Override
+    public Customer loginCustomer(String email, String password)
+    
+    {
+    	Customer customer = customerRepository.findByEmail(email);
+    	
+    	if(customer != null && customer.getPassword().equals(password))
+    	{
+    		return customer;
+    	}
+    	return null;
+    }
 
 }
